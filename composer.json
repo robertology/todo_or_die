@@ -1,0 +1,16 @@
+{
+  "name": "robertology/todo_or_die",
+  "description": "A deadly reminder for your code rot",
+  "autoload": {
+    "psr-4": { "Robertology\\TodoOrDie\\": "src/TodoOrDie" }
+  },
+  "autoload-dev": {
+    "psr-4": { "Robertology\\TodoOrDie\\Test\\": "test/TodoOrDie" }
+  },
+  "require": {
+    "php": "^7.4 || ^8.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9"
+  }
+}
