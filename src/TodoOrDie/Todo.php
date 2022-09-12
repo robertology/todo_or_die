@@ -42,7 +42,7 @@ class Todo {
   }
 
   public function warnIf(bool $condition_met, callable $warn) : self {
-    if ($condition_met) {
+    if (! $this->_hasDied() && $condition_met) {
       $warn($this->_message);
     }
 

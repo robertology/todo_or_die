@@ -109,6 +109,22 @@ class TodoTest extends TestCase {
       ->warnIf(true, [$mock, 'sendWarning2']);
   }
 
+  public function testItDoesNotWarnIfDied() {
+    $mock = $this->getMockBuilder(stdClass::class)
+      ->addMethods(['die', 'warn'])
+      ->getMock();
+
+    $mock->expects($this->once())
+      ->method('die');
+    $mock->expects($this->never())
+      ->method('warn');
+
+    (new ExtendedTodo('Some message', false))
+      ->setUpForTest($mock)
+      ->orIf(true)
+      ->warnIf(true, [$mock, 'warn']);
+  }
+
 }
 
 /**

@@ -57,7 +57,7 @@ Fine, you don't want to deal with things actually failing on you. There are a co
 (new Todo('Zhu Li, do the thing', false))->warnIf(…);
 ```
 
-2. Extend the `Todo` class and override the `protected _die()` method to do whatever you want it to do.
+2. Extend the `Todo` class and override the `protected _die()` method to do whatever you want it to do. Note: `_die()` will only be called once, when the first "die" condition is met Also, none of the warnings be triggered after that.
 
 
 ## Notes
