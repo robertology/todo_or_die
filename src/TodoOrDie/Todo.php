@@ -12,11 +12,7 @@ class Todo {
 
   public function __construct(string $todo_message, bool $condition_met) {
     $this->_message = $todo_message;
-
-    if ($condition_met) {
-      $this->_markAsDied();
-      $this->_die();
-    }
+    $this->orIf($condition_met);
   }
 
   protected function _die() {
@@ -36,8 +32,13 @@ class Todo {
     $this->_died = true;
   }
 
+  protected function _shoudDie(bool $condition_met) : bool {
+    return $condition_met &&
+      ! $this->_hasDied();
+  }
+
   public function orIf(bool $condition_met) : self {
-    if (! $this->_hasDied() && $condition_met) {
+    if ($this->_shoudDie($condition_met)) {
       $this->_markAsDied();
       $this->_die();
     }
