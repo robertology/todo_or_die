@@ -3,7 +3,10 @@ declare(strict_types=1);
 
 namespace Robertology\TodoOrDie;
 
-use Robertology\TodoOrDie\OverdueError as Exception;
+use Robertology\TodoOrDie\ {
+  Cache,
+  OverdueError as Exception
+};
 
 class Todo {
 
@@ -42,6 +45,10 @@ class Todo {
     return $this;
   }
 
+  public function getId() : string {
+    return $this->_id;
+  }
+
   protected function _die() {
     $this->_markAsDied();
     throw new Exception($this->_getMessage());
@@ -56,8 +63,12 @@ class Todo {
     return "{$file}:{$line}";
   }
 
+  protected function _getCache() : Cache {
+    return new Cache($this);
+  }
+
   protected function _getData(string $key) : ?string {
-    return null;
+    return $this->_getCache()->get($key);
   }
 
   protected function _getMessage() : string {
@@ -74,6 +85,7 @@ class Todo {
   }
 
   protected function _markAsAlerted() {
+    $this->_getCache()->set('last_alert', (string)time());
     $this->_alerted = true;
   }
 

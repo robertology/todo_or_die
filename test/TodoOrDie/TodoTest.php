@@ -9,6 +9,7 @@ use PHPUnit\Framework\ {
   TestCase
 };
 use Robertology\TodoOrDie\ {
+  Cache,
   OverdueError as Exception,
   Todo
 };
@@ -18,6 +19,8 @@ class TodoTest extends TestCase {
   public function setUp() : void {
     // remove this env value if set
     putenv('TODOORDIE_SKIP_DIE');
+
+    Cache::clearAll();
   }
 
   public function testDoNotDie() {
@@ -151,20 +154,18 @@ class TodoTest extends TestCase {
   }
 
   public function testAlertThrottle() {
-    $this->markTestSkipped('not ready yet');
-
     $mock = $this->getMockBuilder(stdClass::class)
       ->addMethods(['sendWarning'])
       ->getMock();
 
     $mock->expects($this->once())
       ->method('sendWarning')
-      ->with('Some message');
+      ->with('Dummy');
 
-    new Todo('Some message', true, [$mock, 'sendWarning']);
+    Dummy::alert($mock);
 
     // should not expect this one to trigger due to throttling
-    new Todo('Some message', true, [$mock, 'sendWarning']);
+    Dummy::alert($mock);
   }
 
 }
@@ -183,5 +184,12 @@ class ExtendedTodo extends Todo {
   public function setUpForTest(MockObject $mock) {
     $this->_mock = $mock;
     return $this;
+  }
+}
+
+class Dummy {
+
+  static public function alert($mock) {
+    new Todo('Dummy', true, [$mock, 'sendWarning']);
   }
 }
