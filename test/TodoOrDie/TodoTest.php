@@ -150,6 +150,23 @@ class TodoTest extends TestCase {
     new Todo('Some message', true, [$mock, 'sendWarning']);
   }
 
+  public function testAlertThrottle() {
+    $this->markTestSkipped('not ready yet');
+
+    $mock = $this->getMockBuilder(stdClass::class)
+      ->addMethods(['sendWarning'])
+      ->getMock();
+
+    $mock->expects($this->once())
+      ->method('sendWarning')
+      ->with('Some message');
+
+    new Todo('Some message', true, [$mock, 'sendWarning']);
+
+    // should not expect this one to trigger due to throttling
+    new Todo('Some message', true, [$mock, 'sendWarning']);
+  }
+
 }
 
 /**
