@@ -22,14 +22,17 @@ class Cache {
     return sys_get_temp_dir() . '/todo_or_die';
   }
 
-  public function get(string $key) : ?string {
-    return $this->_getData()[$key] ?? null;
+  public function getLastAlert() : ?int {
+    $last = $this->_get('last_alert');
+    return isset($last) ? (int)$last : null;
   }
 
-  public function set(string $key, string $value) {
-    $data = $this->_getAllData();
-    $data[$this->_todo->getId()][$key] = $value;
-    file_put_contents($this->_getFilePath(), json_encode($data));
+  public function setLastAlert(int $timestamp) {
+    $this->_set('last_alert', (string)$timestamp);
+  }
+
+  protected function _get(string $key) : ?string {
+    return $this->_getData()[$key] ?? null;
   }
 
   protected function _getAllData() : array {
@@ -44,5 +47,11 @@ class Cache {
     }
 
     return $this->_data;
+  }
+
+  protected function _set(string $key, string $value) {
+    $data = $this->_getAllData();
+    $data[$this->_todo->getId()][$key] = $value;
+    file_put_contents($this->_getFilePath(), json_encode($data));
   }
 }

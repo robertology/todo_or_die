@@ -67,10 +67,6 @@ class Todo {
     return new Cache($this);
   }
 
-  protected function _getData(string $key) : ?string {
-    return $this->_getCache()->get($key);
-  }
-
   protected function _getMessage() : string {
     return $this->_message;
   }
@@ -80,12 +76,12 @@ class Todo {
   }
 
   protected function _hasRecentlyAlerted() : bool {
-    $last_alert = $this->_getData('last_alert') ?? 0;
+    $last_alert = $this->_getCache()->getLastAlert() ?? 0;
     return $last_alert >= strtotime('-1 hour');
   }
 
   protected function _markAsAlerted() {
-    $this->_getCache()->set('last_alert', (string)time());
+    $this->_getCache()->setLastAlert(time());
     $this->_alerted = true;
   }
 
