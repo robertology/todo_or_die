@@ -17,9 +17,11 @@ class Todo {
     $this->_message = $what_to_do;
   }
 
-  public function warnIf(bool $condition_met, callable $warn) {
+  public function warnIf(bool $condition_met, callable $warn) : self {
     if ($condition_met) {
       $warn($this->_message);
     }
+
+    return $this;
   }
 }

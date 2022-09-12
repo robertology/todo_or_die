@@ -50,4 +50,37 @@ class TodoTest extends TestCase {
       ->warnIf(false, [$mock, 'sendWarning']);
   }
 
+  public function testItWarnsOnAnotherCondition() {
+    $mock = $this->getMockBuilder(stdClass::class)
+      ->addMethods(['noSendWarning', 'sendWarning'])
+      ->getMock();
+
+    $mock->expects($this->never())
+      ->method('noSendWarning');
+    $mock->expects($this->once())
+      ->method('sendWarning')
+      ->with('Some message');
+
+    (new Todo('Some message', false))
+      ->warnIf(false, [$mock, 'noSendWarning'])
+      ->warnIf(true, [$mock, 'sendWarning']);
+  }
+
+  public function testItWarnsOnAllConditions() {
+    $mock = $this->getMockBuilder(stdClass::class)
+      ->addMethods(['sendWarning1', 'sendWarning2'])
+      ->getMock();
+
+    $mock->expects($this->once())
+      ->method('sendWarning1')
+      ->with('Some message');
+    $mock->expects($this->once())
+      ->method('sendWarning2')
+      ->with('Some message');
+
+    (new Todo('Some message', false))
+      ->warnIf(true, [$mock, 'sendWarning1'])
+      ->warnIf(true, [$mock, 'sendWarning2']);
+  }
+
 }
