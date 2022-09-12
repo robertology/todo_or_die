@@ -36,29 +36,6 @@ class TodoTest extends TestCase {
     new Todo('Some message', true);
   }
 
-  public function testItDiesOnAnotherCondition() {
-    $this->expectException(Exception::class);
-    $this->expectExceptionMessage('Some message');
-
-    (new Todo('Some message', false))
-      ->dieIf(false)
-      ->dieIf(true);
-  }
-
-  public function testItOnlyDiesOnce() {
-    $mock = $this->getMockBuilder(stdClass::class)
-      ->addMethods(['die'])
-      ->getMock();
-
-    $mock->expects($this->once())
-      ->method('die');
-
-    (new ExtendedTodo('Some message', false))
-      ->setUpForTest($mock)
-      ->dieIf(true)
-      ->dieIf(true);
-  }
-
   public function testItAlerts() {
     $mock = $this->getMockBuilder(stdClass::class)
       ->addMethods(['sendWarning'])
@@ -127,10 +104,10 @@ class TodoTest extends TestCase {
     $mock->expects($this->never())
       ->method('warn');
 
-    (new ExtendedTodo('Some message', false))
-      ->setUpForTest($mock)
-      ->dieIf(true)
+    ExtendedTodo::setUpForTest($mock);
+    (new ExtendedTodo('Some message', true))
       ->alertIf(true, [$mock, 'warn']);
+    ExtendedTodo::setUpForTest();
   }
 
   public function testItDoesNotDieWhenEnvIsSet() {
@@ -175,15 +152,14 @@ class TodoTest extends TestCase {
  */
 class ExtendedTodo extends Todo {
 
-  private $_mock;
+  static private $_mock;
 
-  protected function _die() {
-    $this->_mock->die();
+  static public function setUpForTest(MockObject $mock = null) {
+    self::$_mock = $mock;
   }
 
-  public function setUpForTest(MockObject $mock) {
-    $this->_mock = $mock;
-    return $this;
+  protected function _die() {
+    self::$_mock->die();
   }
 }
 

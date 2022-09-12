@@ -21,7 +21,7 @@ class Todo {
 
     // If an alert callable was given: do not die, only alert
     if (! isset($alert)) {
-      $this->dieIf($condition_met);
+      $this->_dieIf($condition_met);
     } else {
       $this->alertIf($condition_met, $alert);
     }
@@ -36,7 +36,7 @@ class Todo {
     return $this;
   }
 
-  public function dieIf(bool $condition_met) : self {
+  protected function _dieIf(bool $condition_met) : self {
     if ($this->_shouldDie($condition_met)) {
       $this->_markAsDied();
       $this->_die();
