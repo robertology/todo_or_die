@@ -4,7 +4,10 @@ declare(strict_types=1);
 namespace Robertology\TodoOrDie\Test;
 
 use stdClass;
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\ {
+  MockObject\MockObject,
+  TestCase
+};
 use Robertology\TodoOrDie\ {
   OverdueError as Exception,
   Todo
@@ -31,6 +34,20 @@ class TodoTest extends TestCase {
 
     (new Todo('Some message', false))
       ->orIf(false)
+      ->orIf(true);
+  }
+
+  public function testItOnlyDiesOnce() {
+    $mock = $this->getMockBuilder(stdClass::class)
+      ->addMethods(['die'])
+      ->getMock();
+
+    $mock->expects($this->once())
+      ->method('die');
+
+    (new ExtendedTodo('Some message', false))
+      ->setUpForTest($mock)
+      ->orIf(true)
       ->orIf(true);
   }
 
@@ -92,4 +109,21 @@ class TodoTest extends TestCase {
       ->warnIf(true, [$mock, 'sendWarning2']);
   }
 
+}
+
+/**
+ * For testing behavior of overriding methods
+ */
+class ExtendedTodo extends Todo {
+
+  private $_mock;
+
+  protected function _die() {
+    $this->_mock->die();
+  }
+
+  public function setUpForTest(MockObject $mock) {
+    $this->_mock = $mock;
+    return $this;
+  }
 }
