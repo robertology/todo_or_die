@@ -30,7 +30,7 @@ class Todo {
   }
 
   public function dieIf(bool $condition_met) : self {
-    if ($this->_shoudDie($condition_met)) {
+    if ($this->_shouldDie($condition_met)) {
       $this->_markAsDied();
       $this->_die();
     }
@@ -55,7 +55,7 @@ class Todo {
     $this->_died = true;
   }
 
-  protected function _shoudDie(bool $condition_met) : bool {
+  protected function _shouldDie(bool $condition_met) : bool {
     return $condition_met &&
       ! $this->_hasDied() &&
       ! getenv('TODOORDIE_SKIP_DIE');
