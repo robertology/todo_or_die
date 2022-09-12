@@ -56,7 +56,7 @@ class TodoTest extends TestCase {
       ->orIf(true);
   }
 
-  public function testItWarns() {
+  public function testItAlerts() {
     $mock = $this->getMockBuilder(stdClass::class)
       ->addMethods(['sendWarning'])
       ->getMock();
@@ -66,10 +66,10 @@ class TodoTest extends TestCase {
       ->with('Some message');
 
     (new Todo('Some message', false))
-      ->warnIf(true, [$mock, 'sendWarning']);
+      ->alertIf(true, [$mock, 'sendWarning']);
   }
 
-  public function testItDoesNotWarn() {
+  public function testItDoesNotAlert() {
     $mock = $this->getMockBuilder(stdClass::class)
       ->addMethods(['sendWarning'])
       ->getMock();
@@ -78,10 +78,10 @@ class TodoTest extends TestCase {
       ->method('sendWarning');
 
     (new Todo('Some message', false))
-      ->warnIf(false, [$mock, 'sendWarning']);
+      ->alertIf(false, [$mock, 'sendWarning']);
   }
 
-  public function testItWarnsOnAnotherCondition() {
+  public function testItAlertsOnAnotherCondition() {
     $mock = $this->getMockBuilder(stdClass::class)
       ->addMethods(['noSendWarning', 'sendWarning'])
       ->getMock();
@@ -93,11 +93,11 @@ class TodoTest extends TestCase {
       ->with('Some message');
 
     (new Todo('Some message', false))
-      ->warnIf(false, [$mock, 'noSendWarning'])
-      ->warnIf(true, [$mock, 'sendWarning']);
+      ->alertIf(false, [$mock, 'noSendWarning'])
+      ->alertIf(true, [$mock, 'sendWarning']);
   }
 
-  public function testItWarnsOnAllConditions() {
+  public function testItAlertsOnAllConditions() {
     $mock = $this->getMockBuilder(stdClass::class)
       ->addMethods(['sendWarning1', 'sendWarning2'])
       ->getMock();
@@ -110,11 +110,11 @@ class TodoTest extends TestCase {
       ->with('Some message');
 
     (new Todo('Some message', false))
-      ->warnIf(true, [$mock, 'sendWarning1'])
-      ->warnIf(true, [$mock, 'sendWarning2']);
+      ->alertIf(true, [$mock, 'sendWarning1'])
+      ->alertIf(true, [$mock, 'sendWarning2']);
   }
 
-  public function testItDoesNotWarnIfDied() {
+  public function testItDoesNotAlertIfDied() {
     $mock = $this->getMockBuilder(stdClass::class)
       ->addMethods(['die', 'warn'])
       ->getMock();
@@ -127,7 +127,7 @@ class TodoTest extends TestCase {
     (new ExtendedTodo('Some message', false))
       ->setUpForTest($mock)
       ->orIf(true)
-      ->warnIf(true, [$mock, 'warn']);
+      ->alertIf(true, [$mock, 'warn']);
   }
 
   public function testItDoesNotDieWhenEnvIsSet() {

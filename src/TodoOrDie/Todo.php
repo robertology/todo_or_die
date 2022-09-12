@@ -47,9 +47,9 @@ class Todo {
     return $this;
   }
 
-  public function warnIf(bool $condition_met, callable $warn) : self {
+  public function alertIf(bool $condition_met, callable $callable) : self {
     if (! $this->_hasDied() && $condition_met) {
-      $warn($this->_getMessage());
+      $callable($this->_getMessage());
     }
 
     return $this;

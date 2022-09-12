@@ -36,16 +36,16 @@ You can chain more conditions. The first one to evaluate as `true` will "or die"
   ->orIf($some_other_condition);
 ```
 
-You can also add a callable to act as a warning - to help avoid the "or die" by reminding you to do it soon. This has two parameters (both required):
+You can also add a callable to act as an alert - to help avoid the "or die" by reminding you to do it soon. This has two parameters (both required):
 1. The boolean condition
-2. A callable to do the warning
+2. A callable to do the alert
 
 These can also be chained. Any and all that evaluate to `true` will trigger the callable.
 The callable will be called with the "to do" message.
 ```php
 (new Todo(…))
-  ->warnIf(time() > strtotime('1 dec 2023'), [$logger, 'debug'])
-  ->warnIf($some_condition, $my_callable);
+  ->alertIf(time() > strtotime('1 dec 2023'), [$logger, 'debug'])
+  ->alertIf($some_condition, $my_callable);
 ```
 
 ### Don't Die
@@ -54,18 +54,18 @@ Fine, you don't want to deal with things actually failing on you. There are a fe
 
 #### Globally
 
-1. Set the `TODOORDIE_SKIP_DIE` environment variable to a truthy value. This will skip the "or die" for all `Todo`s but will still evaluate the warnings. This is a good option for production.
+1. Set the `TODOORDIE_SKIP_DIE` environment variable to a truthy value. This will skip the "or die" for all `Todo`s but will still evaluate the `alertIf()` conditions. This is a good option for production.
 ```php
 putenv('TODOORDIE_SKIP_DIE=1');
 ```
 
 
-2. Extend the `Todo` class and override the `protected _die()` method to do whatever you want it to do. Note: `_die()` will only be called once, when the first "die" condition is met Also, none of the warnings be triggered after that.
+2. Extend the `Todo` class and override the `protected _die()` method to do whatever you want it to do. Note: `_die()` will only be called once, when the first "die" condition is met Also, none of the alerts will be triggered after that.
 
 #### Case by case
-1. Just make the initial condition be `false` and add a warning.
+1. Just make the initial condition be `false` and add an alert.
 ```php
-(new Todo('Zhu Li, do the thing', false))->warnIf(…);
+(new Todo('Zhu Li, do the thing', false))->alertIf(…);
 ```
 
 
