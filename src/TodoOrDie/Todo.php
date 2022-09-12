@@ -21,6 +21,23 @@ class Todo {
     }
   }
 
+  public function alertIf(bool $condition_met, callable $callable) : self {
+    if (! $this->_hasDied() && $condition_met) {
+      $callable($this->_getMessage());
+    }
+
+    return $this;
+  }
+
+  public function dieIf(bool $condition_met) : self {
+    if ($this->_shoudDie($condition_met)) {
+      $this->_markAsDied();
+      $this->_die();
+    }
+
+    return $this;
+  }
+
   protected function _die() {
     $this->_markAsDied();
     throw new Exception($this->_getMessage());
@@ -44,20 +61,4 @@ class Todo {
       ! getenv('TODOORDIE_SKIP_DIE');
   }
 
-  public function dieIf(bool $condition_met) : self {
-    if ($this->_shoudDie($condition_met)) {
-      $this->_markAsDied();
-      $this->_die();
-    }
-
-    return $this;
-  }
-
-  public function alertIf(bool $condition_met, callable $callable) : self {
-    if (! $this->_hasDied() && $condition_met) {
-      $callable($this->_getMessage());
-    }
-
-    return $this;
-  }
 }
