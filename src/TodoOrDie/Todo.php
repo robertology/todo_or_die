@@ -10,8 +10,8 @@ class Todo {
   private bool $_died = false;
   private string $_message;
 
-  public function __construct(string $what_to_do, bool $condition_met) {
-    $this->_message = $what_to_do;
+  public function __construct(string $todo_message, bool $condition_met) {
+    $this->_message = $todo_message;
 
     if ($condition_met) {
       $this->_markAsDied();
@@ -21,7 +21,11 @@ class Todo {
 
   protected function _die() {
     $this->_markAsDied();
-    throw new Exception($this->_message);
+    throw new Exception($this->_getMessage());
+  }
+
+  protected function _getMessage() : string {
+    return $this->_message;
   }
 
   protected function _hasDied() : bool {
@@ -43,7 +47,7 @@ class Todo {
 
   public function warnIf(bool $condition_met, callable $warn) : self {
     if (! $this->_hasDied() && $condition_met) {
-      $warn($this->_message);
+      $warn($this->_getMessage());
     }
 
     return $this;
