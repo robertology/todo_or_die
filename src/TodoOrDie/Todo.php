@@ -34,7 +34,8 @@ class Todo {
 
   protected function _shoudDie(bool $condition_met) : bool {
     return $condition_met &&
-      ! $this->_hasDied();
+      ! $this->_hasDied() &&
+      ! getenv('TODOORDIE_SKIP_DIE');
   }
 
   public function orIf(bool $condition_met) : self {

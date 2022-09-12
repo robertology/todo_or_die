@@ -50,14 +50,23 @@ The callable will be called with the "to do" message.
 
 ### Don't Die
 
-Fine, you don't want to deal with things actually failing on you. There are a couple ways to make that happen.
+Fine, you don't want to deal with things actually failing on you. There are a few ways to make that happen.
 
+#### Globally
+
+1. Set the `TODOORDIE_SKIP_DIE` environment variable to a truthy value. This will skip the "or die" for all `Todo`s but will still evaluate the warnings. This is a good option for production.
+```php
+putenv('TODOORDIE_SKIP_DIE=1');
+```
+
+
+2. Extend the `Todo` class and override the `protected _die()` method to do whatever you want it to do. Note: `_die()` will only be called once, when the first "die" condition is met Also, none of the warnings be triggered after that.
+
+#### Case by case
 1. Just make the initial condition be `false` and add a warning.
 ```php
 (new Todo('Zhu Li, do the thing', false))->warnIf(…);
 ```
-
-2. Extend the `Todo` class and override the `protected _die()` method to do whatever you want it to do. Note: `_die()` will only be called once, when the first "die" condition is met Also, none of the warnings be triggered after that.
 
 
 ## Notes

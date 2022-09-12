@@ -15,6 +15,11 @@ use Robertology\TodoOrDie\ {
 
 class TodoTest extends TestCase {
 
+  public function setUp() : void {
+    // remove this env value if set
+    putenv('TODOORDIE_SKIP_DIE');
+  }
+
   public function testDoNotDie() {
     $this->expectNotToPerformAssertions();
 
@@ -123,6 +128,14 @@ class TodoTest extends TestCase {
       ->setUpForTest($mock)
       ->orIf(true)
       ->warnIf(true, [$mock, 'warn']);
+  }
+
+  public function testItDoesNotDieWhenEnvIsSet() {
+    $this->expectNotToPerformAssertions();
+
+    putenv('TODOORDIE_SKIP_DIE=1');
+
+    new Todo('Some message', true);
   }
 
 }
