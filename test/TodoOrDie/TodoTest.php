@@ -38,8 +38,8 @@ class TodoTest extends TestCase {
     $this->expectExceptionMessage('Some message');
 
     (new Todo('Some message', false))
-      ->orIf(false)
-      ->orIf(true);
+      ->dieIf(false)
+      ->dieIf(true);
   }
 
   public function testItOnlyDiesOnce() {
@@ -52,8 +52,8 @@ class TodoTest extends TestCase {
 
     (new ExtendedTodo('Some message', false))
       ->setUpForTest($mock)
-      ->orIf(true)
-      ->orIf(true);
+      ->dieIf(true)
+      ->dieIf(true);
   }
 
   public function testItAlerts() {
@@ -126,7 +126,7 @@ class TodoTest extends TestCase {
 
     (new ExtendedTodo('Some message', false))
       ->setUpForTest($mock)
-      ->orIf(true)
+      ->dieIf(true)
       ->alertIf(true, [$mock, 'warn']);
   }
 

@@ -32,8 +32,8 @@ new Todo('Remove this hack after the old ones have been processed', time() > str
 You can chain more conditions. The first one to evaluate as `true` will "or die" your code.
 ```php
 (new Todo(…))
-  ->orIf(version_compare(phpversion(), '8.1', '>'))
-  ->orIf($some_other_condition);
+  ->dieIf(version_compare(phpversion(), '8.1', '>'))
+  ->dieIf($some_other_condition);
 ```
 
 You can also add a callable to act as an alert - to help avoid the "or die" by reminding you to do it soon. This has two parameters (both required):
