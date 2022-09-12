@@ -63,7 +63,12 @@ putenv('TODOORDIE_SKIP_DIE=1');
 2. Extend the `Todo` class and override the `protected _die()` method to do whatever you want it to do. Note: `_die()` will only be called once, when the first "die" condition is met Also, none of the alerts will be triggered after that.
 
 #### Case by case
-1. Just make the initial condition be `false` and add an alert.
+1. Give your alert callable as the third argument to the constructor. This will convert the condition to an alert only.
+```php
+new Todo('Zhu Li, do the thing', true, $callable);
+```
+
+2. Make the initial condition be `false` and add an alert. But this is silly; just do it the other way.
 ```php
 (new Todo('Zhu Li, do the thing', false))->alertIf(…);
 ```

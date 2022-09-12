@@ -138,6 +138,18 @@ class TodoTest extends TestCase {
     new Todo('Some message', true);
   }
 
+  public function testItOnlyAlerts() {
+    $mock = $this->getMockBuilder(stdClass::class)
+      ->addMethods(['sendWarning'])
+      ->getMock();
+
+    $mock->expects($this->once())
+      ->method('sendWarning')
+      ->with('Some message');
+
+    new Todo('Some message', true, [$mock, 'sendWarning']);
+  }
+
 }
 
 /**

@@ -10,9 +10,15 @@ class Todo {
   private bool $_died = false;
   private string $_message;
 
-  public function __construct(string $todo_message, bool $condition_met) {
+  public function __construct(string $todo_message, bool $condition_met, callable $alert = null) {
     $this->_message = $todo_message;
-    $this->orIf($condition_met);
+
+    // If an alert callable was given: do not die, only alert
+    if (! isset($alert)) {
+      $this->orIf($condition_met);
+    } else {
+      $this->alertIf($condition_met, $alert);
+    }
   }
 
   protected function _die() {
