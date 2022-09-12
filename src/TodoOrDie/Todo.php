@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Robertology\TodoOrDie;
 
-use Exception;
+use Robertology\TodoOrDie\OverdueError as Exception;
 
 class Todo {
 

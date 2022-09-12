@@ -3,9 +3,11 @@ declare(strict_types=1);
 
 namespace Robertology\TodoOrDie\Test;
 
-use Exception;
 use PHPUnit\Framework\TestCase;
-use Robertology\TodoOrDie\Todo;
+use Robertology\TodoOrDie\ {
+  OverdueError as Exception,
+  Todo
+};
 
 class TodoTest extends TestCase {
 
