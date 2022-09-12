@@ -25,6 +25,15 @@ class TodoTest extends TestCase {
     new Todo('Some message', true);
   }
 
+  public function testItDiesOnAnotherCondition() {
+    $this->expectException(Exception::class);
+    $this->expectExceptionMessage('Some message');
+
+    (new Todo('Some message', false))
+      ->orIf(false)
+      ->orIf(true);
+  }
+
   public function testItWarns() {
     $mock = $this->getMockBuilder(stdClass::class)
       ->addMethods(['sendWarning'])
