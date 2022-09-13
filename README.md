@@ -2,83 +2,107 @@
 
 A deadly reminder for your code rot.
 
-
-## Installation
-
-`composer require robertology/todo_or_die`
+Replace your `// @todo` comments with something more actionable. This library will help put those more in your face when the time is right. Yes, "Or Die" means **an exception will be thrown** if your condition is met.
 
 
 ## WHY??
 
 I know what you're thinking: Why would anyone want to purposefully cause a failure?
 
-The main idea is that you should hit these in your testing, not in production. But they will be in production, and there's nothing like a little fire under your seat to get things done. (but keep reading for how not to break production)
+The main idea is that you should hit these in your testing, not in production. But they *will* be in production, and there's nothing like a little fire under your seat to get things done. (but keep reading for how not to break production)
 
 Yes, it is a bit harsh, but try a `grep -ri '@todo' . | wc -l` on your codebase and see how many are just sitting around being ignored. Face it, [Later equals Never](http://on-agile.blogspot.com/2007/04/why-you-wont-fix-it-later.html). No one is looking at these `todo`s and your code is just rotting away.
 
-Put a deadline on your "for now"s and "after next version"s.
+Put a real, actionable deadline on those "for now"s and "after next version"s.
+
+
+## Installation
+
+1. Add the repo to composer
+
+… with a single command:
+
+`composer config repositories.todo_or_die vcs https://github.com/robertology/todo_or_die`
+
+… or manually by adding to (or creating) the `repositories` section in your `composer.json`:
+```
+"repositories": [
+  {"type": "vcs", "url": "https://github.com/robertology/todo_or_die"}
+]
+```
+
+2. Tell composer to require it for your package
+
+`composer require robertology/todo_or_die`
 
 
 ## Usage
 
-The constructor has two parameters (both required):
-1. Your "to do" message
-2. A boolean condition to indicate it's past the time to do it
+
+`(string $todo_message, bool $condition, callable $callable_for_alerting = null)`
+
+#### Modes of Use
+
+1. Die
 ```php
-use Robertology\TodoOrDie\Todo;
-new Todo('Remove this hack after the old ones have been processed', time() > strtotime('1 jan 2024'));
+new Todo($todo_message, $condition_to_die);
 ```
 
-You can chain more conditions. The first one to evaluate as `true` will "or die" your code.
+2. Alert
 ```php
-(new Todo(…))
-  ->dieIf(version_compare(phpversion(), '8.1', '>'))
-  ->dieIf($some_other_condition);
+new Todo($todo_message, $condition_to_alert, $callable_for_alerting);
 ```
 
-You can also add a callable to act as an alert - to help avoid the "or die" by reminding you to do it soon. This has two parameters (both required):
-1. The boolean condition
-2. A callable to do the alert
-
-These can also be chained. Any and all that evaluate to `true` will trigger the callable.
-The callable will be called with the "to do" message.
+3. Die or Alert
 ```php
-(new Todo(…))
-  ->alertIf(time() > strtotime('1 dec 2023'), [$logger, 'debug'])
-  ->alertIf($some_condition, $my_callable);
+(new Todo($todo_message, $condition_to_die))
+  ->alertIf($condition_to_alert, $callable_for_alerting);
 ```
 
-### Don't Die
+#### Don't Die
 
-Fine, you don't want to deal with things actually failing on you. There are a few ways to make that happen.
-
-#### Globally
-
-1. Set the `TODOORDIE_SKIP_DIE` environment variable to a truthy value. This will skip the "or die" for all `Todo`s but will still evaluate the `alertIf()` conditions. This is a good option for production.
+Ensure the "Or Die" part never happens by setting the environment variable `TODOORDIE_SKIP_DIE` to a `truthy` value. This will cause only Alerts to be triggered. Any Die condition is ignored. (Hint: this might be a smart move for production)
 ```php
 putenv('TODOORDIE_SKIP_DIE=1');
 ```
 
+#### Alert Throttling
 
-2. Extend the `Todo` class and override the `protected _die()` method to do whatever you want it to do. Note: `_die()` will only be called once, when the first "die" condition is met Also, none of the alerts will be triggered after that.
+To avoid saturating your alert systems, throttling is built in (for Alerts only, not for Die). Each `Todo` should alert only once per hour.
 
-#### Case by case
-1. Give your alert callable as the third argument to the constructor. This will convert the condition to an alert only.
+
+## Examples
+
 ```php
-new Todo('Zhu Li, do the thing', true, $callable);
-```
+use Robertology\TodoOrDie\Todo;
 
-2. Make the initial condition be `false` and add an alert. But this is silly; just do it the other way.
-```php
-(new Todo('Zhu Li, do the thing', false))->alertIf(…);
+// Die only
+new Todo(
+  'Remove after the old jobs have attritioned out',
+  time() > strtotime('1 jan 2024')
+);
+
+// Alert only
+new Todo(
+  'Remove after the old jobs have attritioned out',
+  time() > strtotime('1 jan 2024'),
+  [$logger, 'warning']
+);
+
+// A couple Alerts before we Die
+(new Todo('Remove after the old jobs have attritioned out', time() > strtotime('1 jan 2024')))
+  ->alertIf(time() > strtotime('22 dec 2023'), [$logger, 'warning'])
+  ->alertIf(time() > strtotime('27 dec 2023'), $my_slack_callable);
 ```
 
 
 ## Notes
 
-I used `strtotime()` in the examples but *do not* use relative dates such as `strtotime('+2 days')` because it will be evaluated each time and "two days from now" will never come.
+- I used `strtotime()` in the examples for readability, but *do not* use relative dates such as `strtotime('+2 months')` because it will be evaluated each time and "two months from now" will never come when "now" keeps moving.
 
-The name was shamelessly stolen from the ruby gem [`todo_or_die`][ruby].
+- The Alert throttling uses a file placed in PHP's temp directory (`sys_get_temp_dir()`) which may be prone to garbage collection now and then, but is likely to work fine for this.
+
+- The name was ([also](https://github.com/davidpdrsn/todo-or-die/blob/a23d80b2ff1cef336cd261380a77a5391377aa26/README.md?plain=1#L24)) shamelessly stolen from the ruby gem [`searls/todo_or_die`](https://github.com/searls/todo_or_die).
 
 
 ## License
