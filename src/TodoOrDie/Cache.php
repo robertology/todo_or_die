@@ -54,4 +54,5 @@ class Cache {
     $data[$this->_todo->getId()][$key] = $value;
     file_put_contents($this->_getFilePath(), json_encode($data));
   }
+
 }

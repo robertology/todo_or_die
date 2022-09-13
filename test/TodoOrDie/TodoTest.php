@@ -161,11 +161,16 @@ class ExtendedTodo extends Todo {
   protected function _die() {
     self::$_mock->die();
   }
+
 }
 
+/**
+ * For having a separate class create the Todo
+ */
 class Dummy {
 
   static public function alert($mock) {
     new Todo('Dummy', true, [$mock, 'sendWarning']);
   }
+
 }
