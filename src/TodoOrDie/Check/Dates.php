@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Robertology\TodoOrDie\Check;
 
-class Dates {
+use Robertology\TodoOrDie\Check as CheckInterface;
+
+class Dates implements CheckInterface {
 
   private int $_timestamp;
 

@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Robertology\TodoOrDie\Check;
 
-class Versions {
+use Robertology\TodoOrDie\Check as CheckInterface;
+
+class Versions implements CheckInterface {
 
   private string $_version_left;
   private string $_version_right;
