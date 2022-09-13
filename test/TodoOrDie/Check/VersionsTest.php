@@ -37,4 +37,12 @@ class VersionsTest extends TestCase {
     $this->assertTrue($check());
   }
 
+  public function testPhpVersion() {
+    $check = Versions::php('4.1');
+    $this->assertFalse($check());
+
+    $check = Versions::php('17.1');
+    $this->assertTrue($check());
+  }
+
 }
