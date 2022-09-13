@@ -1,6 +1,7 @@
 {
   "name": "robertology/todo_or_die",
   "description": "A deadly reminder for your code rot",
+  "license": "MIT",
   "autoload": {
     "psr-4": { "Robertology\\TodoOrDie\\": "src/TodoOrDie" }
   },
