@@ -26,4 +26,15 @@ class VersionsTest extends TestCase {
     $this->assertTrue($check());
   }
 
+  public function testComparisonOperator() {
+    $check = new Versions('1.2', '2.0', '<');
+    $this->assertTrue($check());
+
+    $check = new Versions('2.0', '2.0', '=');
+    $this->assertTrue($check());
+
+    $check = new Versions('2.2', '2.0', '>');
+    $this->assertTrue($check());
+  }
+
 }
