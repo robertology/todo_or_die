@@ -18,21 +18,6 @@ Put a real, actionable deadline on those "for now"s and "after next version"s.
 
 ## Installation
 
-1. Add the repo to composer
-
-… with a single command:
-
-`composer config repositories.todo_or_die vcs https://github.com/robertology/todo_or_die`
-
-… or manually by adding to (or creating) the `repositories` section in your `composer.json`:
-```
-"repositories": [
-  {"type": "vcs", "url": "https://github.com/robertology/todo_or_die"}
-]
-```
-
-2. Tell composer to require it for your package
-
 `composer require robertology/todo_or_die`
 
 
