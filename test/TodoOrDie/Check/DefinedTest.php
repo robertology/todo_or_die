@@ -3,10 +3,7 @@ declare(strict_types=1);
 
 namespace Robertology\TodoOrDie\Test\Check;
 
-use PHPUnit\Framework\ {
-  MockObject\MockObject,
-  TestCase
-};
+use PHPUnit\Framework\TestCase;
 use Robertology\TodoOrDie\Check\Defined;
 
 class DefinedTest extends TestCase {
