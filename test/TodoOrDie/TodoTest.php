@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+// @phan-file-suppress PhanNoopNew, PhanTypeMismatchArgumentProbablyReal, PhanUndeclaredMethodInCallable
 
 namespace Robertology\TodoOrDie\Test;
 
@@ -159,6 +160,7 @@ class ExtendedTodo extends Todo {
   }
 
   protected function _die() {
+    // @phan-suppress-next-line PhanUndeclaredMethod
     self::$_mock->die();
   }
 
