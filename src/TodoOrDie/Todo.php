@@ -5,6 +5,8 @@ namespace Robertology\TodoOrDie;
 
 use Robertology\TodoOrDie\ {
   Cache,
+  Check,
+  Check\Defined as BooleanCheck,
   OverdueError as Exception
 };
 
@@ -15,20 +17,22 @@ class Todo {
   private string $_id;
   private string $_message;
 
-  public function __construct(string $todo_message, bool $condition_met, callable $alert = null) {
+  public function __construct(string $todo_message, bool|Check $check, callable $alert = null) {
     $this->_id = $this->_generateId();
     $this->_message = $todo_message;
+    $check = $this->_coerceToCheckObject($check);
 
     // If an alert callable was given: do not die, only alert
     if (! isset($alert)) {
-      $this->_dieIf($condition_met);
+      $this->_dieIf($check);
     } else {
-      $this->alertIf($condition_met, $alert);
+      $this->alertIf($check, $alert);
     }
   }
 
-  public function alertIf(bool $condition_met, callable $callable) : self {
-    if ($this->_shouldAlert($condition_met)) {
+  public function alertIf(bool|Check $check, callable $callable) : self {
+    $check = $this->_coerceToCheckObject($check);
+    if ($this->_shouldAlert($check)) {
       $this->_markAsAlerted();
       $callable($this->_getMessage());
     }
@@ -36,8 +40,12 @@ class Todo {
     return $this;
   }
 
-  protected function _dieIf(bool $condition_met) : self {
-    if ($this->_shouldDie($condition_met)) {
+  protected function _coerceToCheckObject(bool|Check $check) : Check {
+    return is_bool($check) ? new BooleanCheck($check) : $check;
+  }
+
+  protected function _dieIf(Check $check) : self {
+    if ($this->_shouldDie($check)) {
       $this->_markAsDied();
       $this->_die();
     }
@@ -89,15 +97,15 @@ class Todo {
     $this->_died = true;
   }
 
-  protected function _shouldAlert(bool $condition_met) : bool {
-    return $condition_met &&
+  protected function _shouldAlert(Check $check) : bool {
+    return $check() &&
       ! $this->_hasDied() &&
       // If this has chained alerts, don't let one of them throttle the others in the same run
       ($this->_alerted || ! $this->_hasRecentlyAlerted());
   }
 
-  protected function _shouldDie(bool $condition_met) : bool {
-    return $condition_met &&
+  protected function _shouldDie(Check $check) : bool {
+    return $check() &&
       ! $this->_hasDied() &&
       ! getenv('TODOORDIE_SKIP_DIE');
   }

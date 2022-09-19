@@ -11,6 +11,7 @@ use PHPUnit\Framework\ {
 };
 use Robertology\TodoOrDie\ {
   Cache,
+  Check\Defined as BooleanCheck,
   OverdueError as Exception,
   Todo
 };
@@ -145,6 +146,20 @@ class TodoTest extends TestCase {
     // should not expect this one to trigger due to throttling
     Dummy::alert($mock);
   }
+
+  public function testConstructingWithNonTriggeringCheckObject() {
+    $this->expectNotToPerformAssertions();
+
+    new Todo('Some message', new BooleanCheck(false));
+  }
+
+  public function testConstructingWithTriggeringCheckObject() {
+    $this->expectException(Exception::class);
+    $this->expectExceptionMessage('Some message');
+
+    new Todo('Some message', new BooleanCheck(true));
+  }
+
 
 }
 

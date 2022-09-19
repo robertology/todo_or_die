@@ -24,24 +24,24 @@ Put a real, actionable deadline on those "for now"s and "after next version"s.
 ## Usage
 
 
-`(string $todo_message, bool $condition, callable $callable_for_alerting = null)`
+`(string $todo_message, bool|Check $check, callable $callable_for_alerting = null)`
 
 #### Modes of Use
 
 1. Die
 ```php
-new Todo($todo_message, $condition_to_die);
+new Todo($todo_message, $check_to_die);
 ```
 
 2. Alert
 ```php
-new Todo($todo_message, $condition_to_alert, $callable_for_alerting);
+new Todo($todo_message, $check_to_alert, $callable_for_alerting);
 ```
 
 3. Die or Alert
 ```php
-(new Todo($todo_message, $condition_to_die))
-  ->alertIf($condition_to_alert, $callable_for_alerting);
+(new Todo($todo_message, $check_to_die))
+  ->alertIf($check_to_alert, $callable_for_alerting);
 ```
 
 #### Don't Die
@@ -60,24 +60,26 @@ To avoid saturating your alert systems, throttling is built in (for Alerts only,
 
 ```php
 use Robertology\TodoOrDie\Todo;
+use Robertology\TodoOrDie\Check\Dates as DateCheck;
 
 // Die only
 new Todo(
   'Remove after the old jobs have attritioned out',
-  time() > strtotime('1 jan 2024')
+  new DateCheck(strtotime('1 jan 2024'))
 );
 
 // Alert only
 new Todo(
   'Remove after the old jobs have attritioned out',
-  time() > strtotime('1 jan 2024'),
+  new DateCheck(strtotime('1 jan 2024')),
   [$logger, 'warning']
 );
 
 // A couple Alerts before we Die
-(new Todo('Remove after the old jobs have attritioned out', time() > strtotime('1 jan 2024')))
-  ->alertIf(time() > strtotime('22 dec 2023'), [$logger, 'warning'])
-  ->alertIf(time() > strtotime('27 dec 2023'), $my_slack_callable);
+(new Todo('Remove after the old jobs have attritioned out', new DateCheck(strtotime('1 jan 2024'))))
+  ->alertIf(new DateCheck(strtotime('22 dec 2023')), [$logger, 'warning'])
+  ->alertIf(time() >= strtotime('27 dec 2023'), $my_slack_callable);
+//           ^ the constructor and alertIf() can take a Check object or boolean
 ```
 
 
