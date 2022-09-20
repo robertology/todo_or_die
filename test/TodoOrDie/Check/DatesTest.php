@@ -18,4 +18,14 @@ class DatesTest extends TestCase {
     $this->assertFalse($check());
   }
 
+  public function testFromStringPastIsTrue() {
+    $check = Dates::fromString('-1 month');
+    $this->assertTrue($check());
+  }
+
+  public function testFromStringFutureIsFalse() {
+    $check = Dates::fromString('+1 month');
+    $this->assertFalse($check());
+  }
+
 }

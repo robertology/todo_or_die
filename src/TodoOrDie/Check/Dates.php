@@ -16,4 +16,8 @@ class Dates implements CheckInterface {
   public function __invoke() : bool {
     return $this->_timestamp <= time();
   }
+
+  static public function fromString(string $string) : static {
+    return new static(strtotime($string));
+  }
 }

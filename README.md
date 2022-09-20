@@ -69,15 +69,16 @@ new Todo(
 );
 
 // Alert only
+// Note the use of fromString() which gives the same result as strtotime() above
 new Todo(
   'Remove after the old jobs have attritioned out',
-  new DateCheck(strtotime('1 jan 2024')),
+  DateCheck::fromString('1 jan 2024'),
   [$logger, 'warning']
 );
 
 // A couple Alerts before we Die
-(new Todo('Remove after the old jobs have attritioned out', new DateCheck(strtotime('1 jan 2024'))))
-  ->alertIf(new DateCheck(strtotime('22 dec 2023')), [$logger, 'warning'])
+(new Todo('Remove after the old jobs have attritioned out', DateCheck::fromString('1 jan 2024')))
+  ->alertIf(DateCheck::fromString('22 dec 2023'), [$logger, 'warning'])
   ->alertIf(time() >= strtotime('27 dec 2023'), $my_slack_callable);
 //           ^ the constructor and alertIf() can take a Check object or boolean
 ```
