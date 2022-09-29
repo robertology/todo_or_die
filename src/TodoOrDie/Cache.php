@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Robertology\TodoOrDie;
 
 use Robertology\TodoOrDie\ {
+  CacheStorage,
   System\File,
   Todo
 };
@@ -11,17 +12,22 @@ use Robertology\TodoOrDie\ {
 class Cache {
 
   private array $_data;
-  private object $_todo;
+  private CacheStorage $_store;
+  private Todo $_todo;
 
-  public function __construct(Todo $todo) {
+  public function __construct(Todo $todo, CacheStorage $store = null) {
     $this->_todo = $todo;
+    if (isset($store)) {
+      $this->_store = $store;
+    }
   }
 
-  static public function clearAll() {
-    static::_getFile()->truncate();
+  static public function clearAll(CacheStorage $file = null) {
+    $file ??= static::_getDefaultStore();
+    $file->truncate();
   }
 
-  static protected function _getFile() : File {
+  static protected function _getDefaultStore() : CacheStorage {
     return new File(sys_get_temp_dir() . '/todo_or_die');
   }
 
@@ -38,10 +44,6 @@ class Cache {
     return $this->_getData()[$key] ?? null;
   }
 
-  protected function _getFullCache() : array {
-    return json_decode(static::_getFile()->read(), true) ?? [];
-  }
-
   protected function _getData() : array {
     if (! isset($this->_data)) {
       $this->_data = $this->_getFullCache()[$this->_todo->getId()] ?? [];
@@ -50,10 +52,18 @@ class Cache {
     return $this->_data;
   }
 
+  protected function _getFullCache() : array {
+    return json_decode($this->_getStore()->read(), true) ?? [];
+  }
+
+  protected function _getStore() : CacheStorage {
+    return $this->_store ?? $this->_getDefaultStore();
+  }
+
   protected function _set(string $key, string $value) {
     $data = $this->_getFullCache();
     $data[$this->_todo->getId()][$key] = $value;
-    $this->_getFile()->write(json_encode($data));
+    $this->_getStore()->write(json_encode($data));
   }
 
 }
