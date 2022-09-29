@@ -40,8 +40,16 @@ class Todo {
     return $this;
   }
 
+  public function getCache() : Cache {
+    return new Cache($this);
+  }
+
   public function getId() : string {
     return $this->_id;
+  }
+
+  public function hasDied() : bool {
+    return $this->_died;
   }
 
   protected function _coerceToCheckObject(bool|Check $check) : Check {
@@ -71,25 +79,17 @@ class Todo {
     return "{$file}:{$line}";
   }
 
-  protected function _getCache() : Cache {
-    return new Cache($this);
-  }
-
   protected function _getMessage() : string {
     return $this->_message;
   }
 
-  protected function _hasDied() : bool {
-    return $this->_died;
-  }
-
   protected function _hasRecentlyAlerted() : bool {
-    $last_alert = $this->_getCache()->getLastAlert() ?? 0;
+    $last_alert = $this->getCache()->getLastAlert() ?? 0;
     return $last_alert >= strtotime('-1 hour');
   }
 
   protected function _markAsAlerted() {
-    $this->_getCache()->setLastAlert(time());
+    $this->getCache()->setLastAlert(time());
     $this->_alerted = true;
   }
 
@@ -99,14 +99,14 @@ class Todo {
 
   protected function _shouldAlert(Check $check) : bool {
     return $check() &&
-      ! $this->_hasDied() &&
+      ! $this->hasDied() &&
       // If this has chained alerts, don't let one of them throttle the others in the same run
       ($this->_alerted || ! $this->_hasRecentlyAlerted());
   }
 
   protected function _shouldDie(Check $check) : bool {
     return $check() &&
-      ! $this->_hasDied() &&
+      ! $this->hasDied() &&
       ! getenv('TODOORDIE_SKIP_DIE');
   }
 
