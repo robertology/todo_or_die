@@ -40,8 +40,17 @@ class Todo {
     return $this;
   }
 
+  public function getId() : string {
+    return $this->_id;
+  }
+
   protected function _coerceToCheckObject(bool|Check $check) : Check {
     return is_bool($check) ? new BooleanCheck($check) : $check;
+  }
+
+  protected function _die() {
+    $this->_markAsDied();
+    throw new Exception($this->_getMessage());
   }
 
   protected function _dieIf(Check $check) : self {
@@ -51,15 +60,6 @@ class Todo {
     }
 
     return $this;
-  }
-
-  public function getId() : string {
-    return $this->_id;
-  }
-
-  protected function _die() {
-    $this->_markAsDied();
-    throw new Exception($this->_getMessage());
   }
 
   protected function _generateId() : string {

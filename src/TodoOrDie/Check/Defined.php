@@ -16,4 +16,5 @@ class Defined implements CheckInterface {
   public function __invoke() : bool {
     return $this->_met;
   }
+
 }

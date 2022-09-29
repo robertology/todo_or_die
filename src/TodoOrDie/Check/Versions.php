@@ -26,4 +26,5 @@ class Versions implements CheckInterface {
   static public function php(string $version, string $operator = self::_DEFAULT_OPERATOR) {
     return new static($version, phpversion(), $operator);
   }
+
 }

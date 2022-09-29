@@ -20,4 +20,5 @@ class Dates implements CheckInterface {
   static public function fromString(string $string) : static {
     return new static(strtotime($string));
   }
+
 }
