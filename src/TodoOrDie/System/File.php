@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Robertology\TodoOrDie\System;
 
-class File {
+use Robertology\TodoOrDie\CacheStorage;
+
+class File implements CacheStorage {
 
   private string $_path;
 
