@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Robertology\TodoOrDie;
 
 use Robertology\TodoOrDie\ {
+  AlertChecker,
   Cache,
   Check,
   Check\Defined as BooleanCheck,
@@ -12,7 +13,7 @@ use Robertology\TodoOrDie\ {
 
 class Todo {
 
-  private bool $_alerted = false;
+  private AlertChecker $_alert_checker;
   private bool $_died = false;
   private string $_id;
   private string $_message;
@@ -33,7 +34,6 @@ class Todo {
   public function alertIf(bool|Check $check, callable $callable) : self {
     $check = $this->_coerceToCheckObject($check);
     if ($this->_shouldAlert($check)) {
-      $this->_markAsAlerted();
       $callable($this->_getMessage());
     }
 
@@ -79,18 +79,12 @@ class Todo {
     return "{$file}:{$line}";
   }
 
+  protected function _getAlertChecker() : AlertChecker {
+    return $this->_alert_checker  = ($this->_alert_checker ?? new AlertChecker($this));
+  }
+
   protected function _getMessage() : string {
     return $this->_message;
-  }
-
-  protected function _hasRecentlyAlerted() : bool {
-    $last_alert = $this->getCache()->getLastAlert() ?? 0;
-    return $last_alert >= strtotime('-1 hour');
-  }
-
-  protected function _markAsAlerted() {
-    $this->getCache()->setLastAlert(time());
-    $this->_alerted = true;
   }
 
   protected function _markAsDied() {
@@ -98,10 +92,7 @@ class Todo {
   }
 
   protected function _shouldAlert(Check $check) : bool {
-    return $check() &&
-      ! $this->hasDied() &&
-      // If this has chained alerts, don't let one of them throttle the others in the same run
-      ($this->_alerted || ! $this->_hasRecentlyAlerted());
+    return $this->_getAlertChecker()($check);
   }
 
   protected function _shouldDie(Check $check) : bool {
