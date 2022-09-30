@@ -32,8 +32,7 @@ class Todo {
   public function alertIf(bool|Check $check, callable $callable) : self {
     $check = $this->_coerceToCheckObject($check);
     if ($this->_shouldAlert($check)) {
-      $this->_getState()->recordAlert();
-      $callable($this->_getMessage());
+      $this->_alert($callable);
     }
 
     return $this;
@@ -41,6 +40,11 @@ class Todo {
 
   public function getId() : string {
     return $this->_id;
+  }
+
+  protected function _alert(callable $callable) {
+    $this->_getState()->recordAlert();
+    $callable($this->_getMessage());
   }
 
   protected function _coerceToCheckObject(bool|Check $check) : Check {
