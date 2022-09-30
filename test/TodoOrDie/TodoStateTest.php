@@ -9,7 +9,6 @@ use PHPUnit\Framework\ {
 };
 use Robertology\TodoOrDie\ {
   TodoState,
-  Cache,
   Check,
   Todo
 };
@@ -47,13 +46,12 @@ class TodoStateTest extends TestCase {
     $check->method('__invoke')
       ->willReturn(true);
 
-    $cache = $this->createStub(Cache::class);
-    $cache->method('getLastAlert')
-      ->willReturn(time());
+    $todo = $this->getMockBuilder(Todo::class)
+      ->disableOriginalConstructor()
+      ->getMock();
 
-    $todo = $this->createStub(Todo::class);
-    $todo->method('getCache')
-      ->willReturn($cache);
+    $state = new TodoState($todo);
+    $state->recordAlert();
 
     $state = new TodoState($todo);
     $this->assertFalse($state->shouldAlert($check));
@@ -64,13 +62,9 @@ class TodoStateTest extends TestCase {
     $check->method('__invoke')
       ->willReturn(true);
 
-    $cache = $this->createStub(Cache::class);
-    $cache->method('getLastAlert')
-      ->willReturn(time());
-
-    $todo = $this->createStub(Todo::class);
-    $todo->method('getCache')
-      ->willReturn($cache);
+    $todo = $this->getMockBuilder(Todo::class)
+      ->disableOriginalConstructor()
+      ->getMock();
 
     $state = new TodoState($todo);
     $state->recordAlert();

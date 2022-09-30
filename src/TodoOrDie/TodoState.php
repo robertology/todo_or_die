@@ -5,6 +5,7 @@ namespace Robertology\TodoOrDie;
 
 use Robertology\TodoOrDie\ {
   AlertChecker,
+  Cache,
   Check,
   Todo
 };
@@ -31,13 +32,13 @@ class TodoState {
   }
 
   public function hasRecentlyAlerted() : bool {
-    $last_alert = $this->_todo->getCache()->getLastAlert() ?? 0;
+    $last_alert = $this->_getCache()->getLastAlert() ?? 0;
     return $last_alert >= strtotime('-' . static::_ALERT_THROTTLE_THRESHOLD);
   }
 
   public function recordAlert() {
     $this->_events['alert']++;
-    $this->_todo->getCache()->setLastAlert(time());
+    $this->_getCache()->setLastAlert(time());
   }
 
   public function recordDie() {
@@ -54,6 +55,10 @@ class TodoState {
 
   protected function _getAlertChecker() : AlertChecker {
     return $this->_alert_checker  = ($this->_alert_checker ?? new AlertChecker($this));
+  }
+
+  protected function _getCache() : Cache {
+    return new Cache($this->_todo);
   }
 
   protected function _getDieChecker() : DieChecker {

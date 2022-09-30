@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Robertology\TodoOrDie;
 
 use Robertology\TodoOrDie\ {
-  Cache,
   Check,
   Check\Defined as BooleanCheck,
   OverdueError as Exception,
@@ -38,10 +37,6 @@ class Todo {
     }
 
     return $this;
-  }
-
-  public function getCache() : Cache {
-    return new Cache($this);
   }
 
   public function getId() : string {
