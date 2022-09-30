@@ -43,10 +43,6 @@ class Todo {
     return $this->_id;
   }
 
-  public function hasDied() : bool {
-    return $this->_getState()->hasDied();
-  }
-
   protected function _coerceToCheckObject(bool|Check $check) : Check {
     return is_bool($check) ? new BooleanCheck($check) : $check;
   }
@@ -56,12 +52,10 @@ class Todo {
     throw new Exception($this->_getMessage());
   }
 
-  protected function _dieIf(Check $check) : self {
+  protected function _dieIf(Check $check) {
     if ($this->_shouldDie($check)) {
       $this->_die();
     }
-
-    return $this;
   }
 
   protected function _generateId() : string {
