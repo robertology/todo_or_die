@@ -22,9 +22,9 @@ class Cache {
     }
   }
 
-  static public function clearAll(CacheStorage $file = null) {
-    $file ??= static::_getDefaultStore();
-    $file->truncate();
+  static public function clearAll(CacheStorage $store = null) {
+    $store ??= static::_getDefaultStore();
+    $store->truncate();
   }
 
   static protected function _getDefaultStore() : CacheStorage {
