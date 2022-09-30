@@ -5,40 +5,21 @@ namespace Robertology\TodoOrDie;
 
 use Robertology\TodoOrDie\ {
   Check,
-  Todo
+  TodoState,
 };
 
 class AlertChecker {
 
-  private const _ALERT_THROTTLE_THRESHOLD = '1 hour';
+  private TodoState $_todo_state;
 
-  private bool $_alerted = false;
-  private Todo $_todo;
-
-  public function __construct(Todo $todo) {
-    $this->_todo = $todo;
+  public function __construct(TodoState $todo_state) {
+    $this->_todo_state = $todo_state;
   }
 
   public function __invoke(Check $check) : bool {
-    $alerted = ! $this->_todo->hasDied() &&
+    return ! $this->_todo_state->hasDied() &&
       $check() &&
-      ($this->_hasAlerted() || ! $this->_hasRecentlyAlerted());
-
-    if ($alerted) {
-      $this->_alerted = true;
-      $this->_todo->getCache()->setLastAlert(time());
-    }
-
-    return $alerted;
-  }
-
-  protected function _hasAlerted() : bool {
-    return $this->_alerted;
-  }
-
-  protected function _hasRecentlyAlerted() : bool {
-    $last_alert = $this->_todo->getCache()->getLastAlert() ?? 0;
-    return $last_alert >= strtotime('-' . static::_ALERT_THROTTLE_THRESHOLD);
+      ($this->_todo_state->hasAlerted() || ! $this->_todo_state->hasRecentlyAlerted());
   }
 
 }

@@ -175,6 +175,7 @@ class ExtendedTodo extends Todo {
   }
 
   protected function _die() {
+    $this->_getState()->recordDie();
     // @phan-suppress-next-line PhanUndeclaredMethod
     self::$_mock->die();
   }

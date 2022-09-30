@@ -4,20 +4,18 @@ declare(strict_types=1);
 namespace Robertology\TodoOrDie;
 
 use Robertology\TodoOrDie\ {
-  AlertChecker,
-  DieChecker,
   Cache,
   Check,
   Check\Defined as BooleanCheck,
-  OverdueError as Exception
+  OverdueError as Exception,
+  TodoState,
 };
 
 class Todo {
 
-  private AlertChecker $_alert_checker;
-  private DieChecker $_die_checker;
   private string $_id;
   private string $_message;
+  private TodoState $_state;
 
   public function __construct(string $todo_message, bool|Check $check, callable $alert = null) {
     $this->_id = $this->_generateId();
@@ -35,6 +33,7 @@ class Todo {
   public function alertIf(bool|Check $check, callable $callable) : self {
     $check = $this->_coerceToCheckObject($check);
     if ($this->_shouldAlert($check)) {
+      $this->_getState()->recordAlert();
       $callable($this->_getMessage());
     }
 
@@ -50,7 +49,7 @@ class Todo {
   }
 
   public function hasDied() : bool {
-    return $this->_getDieChecker()->hasDied();
+    return $this->_getState()->hasDied();
   }
 
   protected function _coerceToCheckObject(bool|Check $check) : Check {
@@ -58,13 +57,12 @@ class Todo {
   }
 
   protected function _die() {
-    $this->_markAsDied();
+    $this->_getState()->recordDie();
     throw new Exception($this->_getMessage());
   }
 
   protected function _dieIf(Check $check) : self {
     if ($this->_shouldDie($check)) {
-      $this->_markAsDied();
       $this->_die();
     }
 
@@ -80,28 +78,20 @@ class Todo {
     return "{$file}:{$line}";
   }
 
-  protected function _getAlertChecker() : AlertChecker {
-    return $this->_alert_checker  = ($this->_alert_checker ?? new AlertChecker($this));
-  }
-
-  protected function _getDieChecker() : DieChecker {
-    return $this->_die_checker  = ($this->_die_checker ?? new DieChecker());
+  protected function _getState() : TodoState {
+    return $this->_state = ($this->_state ?? new TodoState($this));
   }
 
   protected function _getMessage() : string {
     return $this->_message;
   }
 
-  protected function _markAsDied() {
-    $this->_died = true;
-  }
-
   protected function _shouldAlert(Check $check) : bool {
-    return $this->_getAlertChecker()($check);
+    return $this->_getState()->shouldAlert($check);
   }
 
   protected function _shouldDie(Check $check) : bool {
-    return $this->_getDieChecker()($check);
+    return $this->_getState()->shouldDie($check);
   }
 
 }

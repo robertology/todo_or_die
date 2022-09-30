@@ -10,7 +10,7 @@ use PHPUnit\Framework\ {
 use Robertology\TodoOrDie\ {
   DieChecker,
   Check,
-  Todo
+  TodoState,
 };
 
 class DieCheckerTest extends TestCase {
@@ -25,7 +25,11 @@ class DieCheckerTest extends TestCase {
     $check->method('__invoke')
       ->willReturn(true);
 
-    $checker = new DieChecker();
+    $state = $this->getMockBuilder(TodoState::class)
+      ->disableOriginalConstructor()
+      ->getMock();
+
+    $checker = new DieChecker($state);
     $this->assertTrue($checker($check));
   }
 
@@ -34,7 +38,11 @@ class DieCheckerTest extends TestCase {
     $check->method('__invoke')
       ->willReturn(false);
 
-    $checker = new DieChecker();
+    $state = $this->getMockBuilder(TodoState::class)
+      ->disableOriginalConstructor()
+      ->getMock();
+
+    $checker = new DieChecker($state);
     $this->assertFalse($checker($check));
   }
 
@@ -45,7 +53,11 @@ class DieCheckerTest extends TestCase {
     $check->method('__invoke')
       ->willReturn(true);
 
-    $checker = new DieChecker();
+    $state = $this->getMockBuilder(TodoState::class)
+      ->disableOriginalConstructor()
+      ->getMock();
+
+    $checker = new DieChecker($state);
     $this->assertFalse($checker($check));
   }
 
@@ -54,7 +66,11 @@ class DieCheckerTest extends TestCase {
     $check->method('__invoke')
       ->willReturn(true);
 
-    $checker = new DieChecker();
+    $state = $this->createStub(TodoState::class);
+    $state->method('hasDied')
+      ->will($this->onConsecutiveCalls(false, true));
+
+    $checker = new DieChecker($state);
     $this->assertTrue($checker($check));
     $this->assertFalse($checker($check));
   }

@@ -14,9 +14,8 @@ class TodoState {
   private const _ALERT_THROTTLE_THRESHOLD = '1 hour';
 
   private AlertChecker $_alert_checker;
-  private bool $_alerted = false;
   private DieChecker $_die_checker;
-  private bool $_died = false;
+  private array $_events = ['alert' => 0, 'die' => 0];
   private Todo $_todo;
 
   public function __construct(Todo $todo) {
@@ -24,11 +23,11 @@ class TodoState {
   }
 
   public function hasAlerted() : bool {
-    return $this->_alerted;
+    return $this->_events['alert'] > 0;
   }
 
   public function hasDied() : bool {
-    return $this->_died;
+    return $this->_events['die'] > 0;
   }
 
   public function hasRecentlyAlerted() : bool {
@@ -36,33 +35,29 @@ class TodoState {
     return $last_alert >= strtotime('-' . static::_ALERT_THROTTLE_THRESHOLD);
   }
 
+  public function recordAlert() {
+    $this->_events['alert']++;
+    $this->_todo->getCache()->setLastAlert(time());
+  }
+
+  public function recordDie() {
+    $this->_events['die']++;
+  }
+
   public function shouldAlert(Check $check) : bool {
-    $result = $this->_getAlertChecker()($check);
-
-    if ($result) {
-      $this->_alerted = true;
-      $this->_todo->getCache()->setLastAlert(time());
-    }
-
-    return $result;
+    return $this->_getAlertChecker()($check);
   }
 
   public function shouldDie(Check $check) : bool {
-    $result = $this->_getDieChecker()($check);
-
-    if ($result) {
-      $this->_died = true;
-    }
-
-    return $result;
+    return $this->_getDieChecker()($check);
   }
 
   protected function _getAlertChecker() : AlertChecker {
-    return $this->_alert_checker  = ($this->_alert_checker ?? new AlertChecker($this->_todo));
+    return $this->_alert_checker  = ($this->_alert_checker ?? new AlertChecker($this));
   }
 
   protected function _getDieChecker() : DieChecker {
-    return $this->_die_checker  = ($this->_die_checker ?? new DieChecker());
+    return $this->_die_checker  = ($this->_die_checker ?? new DieChecker($this));
   }
 
 }

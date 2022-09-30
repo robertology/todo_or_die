@@ -9,9 +9,8 @@ use PHPUnit\Framework\ {
 };
 use Robertology\TodoOrDie\ {
   AlertChecker,
-  Cache,
   Check,
-  Todo
+  TodoState,
 };
 
 class AlertCheckerTest extends TestCase {
@@ -21,11 +20,11 @@ class AlertCheckerTest extends TestCase {
     $check->method('__invoke')
       ->willReturn(true);
 
-    $todo = $this->getMockBuilder(Todo::class)
+    $state = $this->getMockBuilder(TodoState::class)
       ->disableOriginalConstructor()
       ->getMock();
 
-    $alert = new AlertChecker($todo);
+    $alert = new AlertChecker($state);
     $this->assertTrue($alert($check));
   }
 
@@ -34,11 +33,11 @@ class AlertCheckerTest extends TestCase {
     $check->method('__invoke')
       ->willReturn(false);
 
-    $todo = $this->getMockBuilder(Todo::class)
+    $state = $this->getMockBuilder(TodoState::class)
       ->disableOriginalConstructor()
       ->getMock();
 
-    $alert = new AlertChecker($todo);
+    $alert = new AlertChecker($state);
     $this->assertFalse($alert($check));
   }
 
@@ -47,11 +46,11 @@ class AlertCheckerTest extends TestCase {
     $check->method('__invoke')
       ->willReturn(true);
 
-    $todo = $this->createStub(Todo::class);
-    $todo->method('hasDied')
+    $state = $this->createStub(TodoState::class);
+    $state->method('hasDied')
       ->willReturn(true);
 
-    $alert = new AlertChecker($todo);
+    $alert = new AlertChecker($state);
     $this->assertFalse($alert($check));
   }
 
@@ -60,11 +59,11 @@ class AlertCheckerTest extends TestCase {
     $check->method('__invoke')
       ->willReturn(true);
 
-    $todo = $this->createStub(Todo::class);
-    $todo->method('hasDied')
+    $state = $this->createStub(TodoState::class);
+    $state->method('hasDied')
       ->willReturn(false);
 
-    $alert = new AlertChecker($todo);
+    $alert = new AlertChecker($state);
     $this->assertTrue($alert($check));
   }
 
@@ -73,15 +72,13 @@ class AlertCheckerTest extends TestCase {
     $check->method('__invoke')
       ->willReturn(true);
 
-    $cache = $this->createStub(Cache::class);
-    $cache->method('getLastAlert')
-      ->willReturn(time());
+    $state = $this->createStub(TodoState::class);
+    $state->method('hasAlerted')
+      ->willReturn(false);
+    $state->method('hasRecentlyAlerted')
+      ->willReturn(true);
 
-    $todo = $this->createStub(Todo::class);
-    $todo->method('getCache')
-      ->willReturn($cache);
-
-    $alert = new AlertChecker($todo);
+    $alert = new AlertChecker($state);
     $this->assertFalse($alert($check));
   }
 
@@ -90,15 +87,13 @@ class AlertCheckerTest extends TestCase {
     $check->method('__invoke')
       ->willReturn(true);
 
-    $cache = $this->createStub(Cache::class);
-    $cache->method('getLastAlert')
-      ->will($this->onConsecutiveCalls(0, time()));
+    $state = $this->createStub(TodoState::class);
+    $state->method('hasAlerted')
+      ->will($this->onConsecutiveCalls(false, true));
+    $state->method('hasRecentlyAlerted')
+      ->will($this->onConsecutiveCalls(false, true));
 
-    $todo = $this->createStub(Todo::class);
-    $todo->method('getCache')
-      ->willReturn($cache);
-
-    $alert = new AlertChecker($todo);
+    $alert = new AlertChecker($state);
     $this->assertTrue($alert($check));
     $this->assertTrue($alert($check));
   }

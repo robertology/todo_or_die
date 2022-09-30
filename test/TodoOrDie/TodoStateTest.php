@@ -66,14 +66,14 @@ class TodoStateTest extends TestCase {
 
     $cache = $this->createStub(Cache::class);
     $cache->method('getLastAlert')
-      ->will($this->onConsecutiveCalls(0, time()));
+      ->willReturn(time());
 
     $todo = $this->createStub(Todo::class);
     $todo->method('getCache')
       ->willReturn($cache);
 
     $state = new TodoState($todo);
-    $this->assertTrue($state->shouldAlert($check));
+    $state->recordAlert();
     $this->assertTrue($state->shouldAlert($check));
   }
 
@@ -87,8 +87,8 @@ class TodoStateTest extends TestCase {
       ->getMock();
 
     $state = new TodoState($todo);
-    $this->assertTrue($state->shouldDie($check));
-    $this->assertFalse($state->shouldDie($check));
+    $state->recordDie();
+    $this->assertFalse($state->shouldAlert($check));
   }
 
 }
