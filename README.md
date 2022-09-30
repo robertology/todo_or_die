@@ -20,6 +20,10 @@ Put a real, actionable deadline on those "for now"s and "after next version"s.
 
 `composer require robertology/todo_or_die`
 
+For `PHP 7.4`, install version 1, and read the README of that version for usage instructions.
+
+(`composer require robertology/todo_or_die:^1`)
+
 
 ## Usage
 
