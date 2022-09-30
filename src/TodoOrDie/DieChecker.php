@@ -14,7 +14,7 @@ class DieChecker {
 
   public function __invoke(Check $check) : bool {
     $died = $check() &&
-      ! $this->_hasDied() &&
+      ! $this->hasDied() &&
       ! getenv('TODOORDIE_SKIP_DIE');
 
     $this->_died = $this->_died || $died;
@@ -22,7 +22,7 @@ class DieChecker {
     return $died;
   }
 
-  protected function _hasDied() : bool {
+  public function hasDied() : bool {
     return $this->_died;
   }
 

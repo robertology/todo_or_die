@@ -5,6 +5,7 @@ namespace Robertology\TodoOrDie;
 
 use Robertology\TodoOrDie\ {
   AlertChecker,
+  DieChecker,
   Cache,
   Check,
   Check\Defined as BooleanCheck,
@@ -14,7 +15,7 @@ use Robertology\TodoOrDie\ {
 class Todo {
 
   private AlertChecker $_alert_checker;
-  private bool $_died = false;
+  private DieChecker $_die_checker;
   private string $_id;
   private string $_message;
 
@@ -49,7 +50,7 @@ class Todo {
   }
 
   public function hasDied() : bool {
-    return $this->_died;
+    return $this->_getDieChecker()->hasDied();
   }
 
   protected function _coerceToCheckObject(bool|Check $check) : Check {
@@ -83,6 +84,10 @@ class Todo {
     return $this->_alert_checker  = ($this->_alert_checker ?? new AlertChecker($this));
   }
 
+  protected function _getDieChecker() : DieChecker {
+    return $this->_die_checker  = ($this->_die_checker ?? new DieChecker());
+  }
+
   protected function _getMessage() : string {
     return $this->_message;
   }
@@ -96,9 +101,7 @@ class Todo {
   }
 
   protected function _shouldDie(Check $check) : bool {
-    return $check() &&
-      ! $this->hasDied() &&
-      ! getenv('TODOORDIE_SKIP_DIE');
+    return $this->_getDieChecker()($check);
   }
 
 }
