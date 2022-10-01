@@ -7,6 +7,7 @@ use Robertology\TodoOrDie\ {
   Check,
   Check\Defined as BooleanCheck,
   OverdueError as Exception,
+  TodoIdGenerator,
   TodoState,
 };
 
@@ -63,12 +64,7 @@ class Todo {
   }
 
   protected function _generateId() : string {
-    // The first entry will be the call to this method; use the second one
-    $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1] ?? [];
-    $file = $trace['file'] ?? '';
-    $line = $trace['line'] ?? 0;
-
-    return "{$file}:{$line}";
+    return (new TodoIdGenerator($this))();
   }
 
   protected function _getState() : TodoState {

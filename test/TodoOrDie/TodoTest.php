@@ -160,6 +160,21 @@ class TodoTest extends TestCase {
     new Todo('Some message', new BooleanCheck(true));
   }
 
+  public function testGenerateId() {
+    $file = __FILE__;
+    $line = __LINE__ + 1;
+    $todo = new Todo('test', false);
+
+    $this->assertSame("{$file}:{$line}", $todo->getId());
+  }
+
+  public function testGenerateIdOfExtendedTodo() {
+    $file = __FILE__;
+    $line = __LINE__ + 1;
+    $todo = new ExtendedTodo('test', false);
+
+    $this->assertSame("{$file}:{$line}", $todo->getId());
+  }
 
 }
 
@@ -178,6 +193,10 @@ class ExtendedTodo extends Todo {
     $this->_getState()->recordDie();
     // @phan-suppress-next-line PhanUndeclaredMethod
     self::$_mock->die();
+  }
+
+  protected function _generateId() : string {
+    return parent::_generateId();
   }
 
 }
