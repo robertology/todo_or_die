@@ -106,6 +106,17 @@ new Todo(
 
 - Tip o' the Hat to [The Changelog](https://changelog.com) ([Episode 463](https://changelog.com/podcast/463)) where I first heard of the idea.
 
+### Personal Quest
+
+In addition to having an actual working tool, I had a few goals for myself with this project.
+
+1. Full TDD (Test Driven Development)
+    - The tests are a mix of Behavior and Functional tests, and I'm OK with that for this small project.
+    - I'm not concerned with 100% coverage, but all behavior should have a test.
+2. SOLID "To The Extreme"
+    - After getting to a working version, I continued to refactor with an eye on SOLID principles.
+    - Such a simple concept could have been written with a single class, but being strict here was a good exercise in defining the *Single* Responsibility.
+
 
 ## License
 
