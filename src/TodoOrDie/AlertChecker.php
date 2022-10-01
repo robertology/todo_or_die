@@ -10,7 +10,7 @@ use Robertology\TodoOrDie\ {
 
 class AlertChecker {
 
-  private const _ALERT_THROTTLE_THRESHOLD = '1 hour';
+  private const _ALERT_THROTTLE_THRESHOLD_SECONDS = 3600;
 
   private TodoState $_todo_state;
 
@@ -24,8 +24,12 @@ class AlertChecker {
       $check();
   }
 
+  protected function _getThresholdTimestamp() : int {
+    return time() - static::_ALERT_THROTTLE_THRESHOLD_SECONDS;
+  }
+
   protected function _hasRecentlyAlerted() : bool {
-    return $this->_todo_state->getLastAlert() >= strtotime('-' . static::_ALERT_THROTTLE_THRESHOLD);
+    return $this->_todo_state->getLastAlert() >= $this->_getThresholdTimestamp();
   }
 
   protected function _isThrottled() : bool {
