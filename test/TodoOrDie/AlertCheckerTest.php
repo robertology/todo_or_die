@@ -146,6 +146,11 @@ class AlertCheckerTest extends TestCase {
       [false, -84600, strtotime('+3 minute', $default)],
       [true, '', strtotime('-3 minute', $default)],
       [false, '', strtotime('+3 minute', $default)],
+
+      // Zero should disable throttling
+      [true, 0, strtotime('-3 minute', $default)],
+      [true, 0, strtotime('+3 minute', $default)],
+      [true, 0, time()],
     ];
   }
 

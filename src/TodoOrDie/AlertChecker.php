@@ -24,14 +24,19 @@ class AlertChecker {
       $check();
   }
 
-  protected function _getThresholdTimestamp() : int {
+  protected function _getThresholdSetting() : int {
     $setting = getenv('TODOORDIE_ALERT_THRESHOLD');
     $threshold = (int)$setting;
+
     if ($setting === false || $threshold != $setting || $threshold < 0) {
       $threshold = static::_ALERT_THROTTLE_THRESHOLD_SECONDS;
     }
 
-    return time() - (int)$threshold;
+    return $threshold;
+  }
+
+  protected function _getThresholdTimestamp() : int {
+    return time() - $this->_getThresholdSetting();
   }
 
   protected function _hasRecentlyAlerted() : bool {
@@ -39,9 +44,17 @@ class AlertChecker {
   }
 
   protected function _isThrottled() : bool {
+    if (! $this->_isThrottlingEnabled()) {
+      return false;
+    }
+
     // If this Todo has alerted, consider it not throttled
     return ! $this->_todo_state->hasAlerted() &&
       $this->_hasRecentlyAlerted();
+  }
+
+  protected function _isThrottlingEnabled() : bool {
+    return $this->_getThresholdSetting() !== 0;
   }
 
 }

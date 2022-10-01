@@ -57,10 +57,14 @@ putenv('TODOORDIE_SKIP_DIE=1');
 
 #### Alert Throttling
 
-To avoid saturating your alert systems, throttling is built in (for Alerts only, not for Die). Each `Todo` should alert only once per hour. Change that by setting the environment variable `TODOORDIE_ALERT_THRESHOLD` to the number of seconds desired.
+To avoid saturating your alert systems, throttling is built in (for Alerts only, not for Die). Each `Todo` should alert only once per hour. Change that by setting the environment variable `TODOORDIE_ALERT_THRESHOLD` to the number of seconds desired. Disable throttling by setting this to zero.
 ```php
 // Once per day
 putenv('TODOORDIE_ALERT_THRESHOLD=86400');
+```
+```php
+// Disabled (alert every time)
+putenv('TODOORDIE_ALERT_THRESHOLD=0');
 ```
 
 
