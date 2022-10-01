@@ -98,4 +98,55 @@ class AlertCheckerTest extends TestCase {
     $this->assertTrue($alert($check));
   }
 
+  /**
+   * @dataProvider alertThresholdValues
+   */
+  public function testAlertThresholdConfigurable(
+    bool $will_alert,
+    string|int $setting,
+    int $last_alert
+  ) {
+    $check = $this->createStub(Check::class);
+    $check->method('__invoke')
+      ->willReturn(true);
+
+    $state = $this->createStub(TodoState::class);
+    $state->method('hasAlerted')
+      ->willReturn(false);
+    $state->method('getLastAlert')
+      ->willReturn($last_alert);
+
+    putenv("TODOORDIE_ALERT_THRESHOLD={$setting}");
+    $alert = new AlertChecker($state);
+    $this->assertSame($will_alert, $alert($check));
+
+    putenv('TODOORDIE_ALERT_THRESHOLD');
+  }
+
+  /**
+   * Data Provider
+   *
+   * should_alert, setting, [last_alert_timestamp = time()]
+   */
+  public function alertThresholdValues() : array {
+    $default = strtotime('-1 hour');
+
+    return [
+      [true, 86400, strtotime('-3 day')],
+      [false, 86400, strtotime('-3 hour')],
+      [true, 10, strtotime('-30 minute')],
+      [false, 10, strtotime('-1 second')],
+
+      // Invalid values should use the default
+      [true, 'asdf', strtotime('-3 minute', $default)],
+      [false, 'asdf', strtotime('+3 minute', $default)],
+      [true, '84600asdf', strtotime('-3 minute', $default)],
+      [false, '84600asdf', strtotime('+3 minute', $default)],
+      [true, -84600, strtotime('-3 minute', $default)],
+      [false, -84600, strtotime('+3 minute', $default)],
+      [true, '', strtotime('-3 minute', $default)],
+      [false, '', strtotime('+3 minute', $default)],
+    ];
+  }
+
 }

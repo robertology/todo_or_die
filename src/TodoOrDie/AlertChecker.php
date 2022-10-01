@@ -25,7 +25,13 @@ class AlertChecker {
   }
 
   protected function _getThresholdTimestamp() : int {
-    return time() - static::_ALERT_THROTTLE_THRESHOLD_SECONDS;
+    $setting = getenv('TODOORDIE_ALERT_THRESHOLD');
+    $threshold = (int)$setting;
+    if ($setting === false || $threshold != $setting || $threshold < 0) {
+      $threshold = static::_ALERT_THROTTLE_THRESHOLD_SECONDS;
+    }
+
+    return time() - (int)$threshold;
   }
 
   protected function _hasRecentlyAlerted() : bool {
