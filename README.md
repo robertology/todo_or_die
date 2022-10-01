@@ -104,6 +104,8 @@ new Todo(
 
 - The name was ([also](https://github.com/davidpdrsn/todo-or-die/blob/a23d80b2ff1cef336cd261380a77a5391377aa26/README.md?plain=1#L24)) shamelessly stolen from the ruby gem [`searls/todo_or_die`](https://github.com/searls/todo_or_die).
 
+- Tip o' the Hat to [The Changelog](https://changelog.com) ([Episode 463](https://changelog.com/podcast/463)) where I first heard of the idea.
+
 
 ## License
 
