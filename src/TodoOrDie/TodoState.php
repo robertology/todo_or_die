@@ -12,8 +12,6 @@ use Robertology\TodoOrDie\ {
 
 class TodoState {
 
-  private const _ALERT_THROTTLE_THRESHOLD = '1 hour';
-
   private AlertChecker $_alert_checker;
   private DieChecker $_die_checker;
   private array $_events = ['alert' => 0, 'die' => 0];
@@ -23,17 +21,16 @@ class TodoState {
     $this->_todo = $todo;
   }
 
+  public function getLastAlert() : int {
+    return (int)($this->_getCache()->getLastAlert() ?? 0);
+  }
+
   public function hasAlerted() : bool {
     return $this->_events['alert'] > 0;
   }
 
   public function hasDied() : bool {
     return $this->_events['die'] > 0;
-  }
-
-  public function hasRecentlyAlerted() : bool {
-    $last_alert = $this->_getCache()->getLastAlert() ?? 0;
-    return $last_alert >= strtotime('-' . static::_ALERT_THROTTLE_THRESHOLD);
   }
 
   public function recordAlert() {

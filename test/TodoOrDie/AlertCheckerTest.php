@@ -75,8 +75,8 @@ class AlertCheckerTest extends TestCase {
     $state = $this->createStub(TodoState::class);
     $state->method('hasAlerted')
       ->willReturn(false);
-    $state->method('hasRecentlyAlerted')
-      ->willReturn(true);
+    $state->method('getLastAlert')
+      ->willReturn(time());
 
     $alert = new AlertChecker($state);
     $this->assertFalse($alert($check));
@@ -90,8 +90,8 @@ class AlertCheckerTest extends TestCase {
     $state = $this->createStub(TodoState::class);
     $state->method('hasAlerted')
       ->will($this->onConsecutiveCalls(false, true));
-    $state->method('hasRecentlyAlerted')
-      ->will($this->onConsecutiveCalls(false, true));
+    $state->method('getLastAlert')
+      ->will($this->onConsecutiveCalls(0, time()));
 
     $alert = new AlertChecker($state);
     $this->assertTrue($alert($check));
