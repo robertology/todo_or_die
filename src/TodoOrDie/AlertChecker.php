@@ -18,8 +18,14 @@ class AlertChecker {
 
   public function __invoke(Check $check) : bool {
     return ! $this->_todo_state->hasDied() &&
-      $check() &&
-      ($this->_todo_state->hasAlerted() || ! $this->_todo_state->hasRecentlyAlerted());
+      ! $this->_isThrottled() &&
+      $check();
+  }
+
+  protected function _isThrottled() : bool {
+    // If this Todo has alerted, consider it not throttled
+    return ! $this->_todo_state->hasAlerted() &&
+      $this->_todo_state->hasRecentlyAlerted();
   }
 
 }
